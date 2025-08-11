@@ -1,0 +1,29 @@
+package com.petize.desafio.model.dto.tarefa;
+
+import com.petize.desafio.model.dto.subtarefa.SubTarefaDto;
+import com.petize.desafio.model.enums.Prioridade;
+import com.petize.desafio.model.enums.Status;
+import lombok.*;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class TarefaCreateDto {
+
+    private String tituloTarefa;
+
+    private String descricao;
+
+    private LocalDate dataVencimento;
+
+    private Status status;
+
+    private Prioridade prioridade;
+
+    private List<SubTarefaDto> subtarefas;
+}
