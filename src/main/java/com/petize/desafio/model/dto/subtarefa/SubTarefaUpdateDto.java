@@ -1,8 +1,6 @@
 package com.petize.desafio.model.dto.subtarefa;
 
 import com.petize.desafio.model.enums.Status;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -10,11 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SubTarefaCreateDto {
-
-    @NotBlank(message = "O título é obrigatório")
+public class SubTarefaUpdateDto {
     private String tituloSubTarefa;
 
-    @NotNull(message = "O status é obrigatório")
     private Status status;
 }

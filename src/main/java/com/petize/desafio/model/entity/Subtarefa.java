@@ -18,7 +18,7 @@ public class Subtarefa {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_tarefa")
     @SequenceGenerator(name = "seq_tarefa", sequenceName = "seq_tarefa", allocationSize = 1)
     @Column(name = "ID_SUB_TAREFA")
-    private Long idTarefa;
+    private Long idSubTarefa;
 
     @Column(name = "TITULO_SUB_TAREFA", nullable = false, length = 150)
     private String tituloSubTarefa;

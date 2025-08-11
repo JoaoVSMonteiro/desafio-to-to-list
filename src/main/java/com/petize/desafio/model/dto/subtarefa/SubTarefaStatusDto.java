@@ -1,4 +1,4 @@
-package com.petize.desafio.model.dto.tarefa;
+package com.petize.desafio.model.dto.subtarefa;
 
 import com.petize.desafio.model.enums.Status;
 import lombok.*;
@@ -8,6 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TarefaStatusDto {
+public class SubTarefaStatusDto {
     private Status status;
 }
