@@ -30,7 +30,11 @@ public class TarefaService {
         log.info("Iniciando criação de tarefa");
 
         Tarefa tarefa = tarefaMapper.toEntity(tarefaCreateDto);
-        if (tarefa.getStatus() == null) tarefa.setStatus(Status.PENDENTE);
+        if (tarefa.getStatus() == null
+                || tarefa.getStatus() == Status.CONCLUIDA
+                || tarefa.getStatus() == Status.CANCELADA ) {
+            tarefa.setStatus(Status.PENDENTE);
+        }
         tarefa = tarefaRepository.save(tarefa);
 
         log.info("Tarefa criada com sucesso. ID={}", tarefa.getIdTarefa());
