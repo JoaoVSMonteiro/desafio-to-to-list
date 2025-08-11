@@ -4,15 +4,21 @@ import com.petize.desafio.model.dto.tarefa.TarefaCreateDto;
 import com.petize.desafio.model.dto.tarefa.TarefaDto;
 import com.petize.desafio.model.dto.tarefa.TarefaStatusDto;
 import com.petize.desafio.model.dto.tarefa.TarefaUpdateDto;
+import com.petize.desafio.model.enums.Prioridade;
+import com.petize.desafio.model.enums.Status;
 import com.petize.desafio.service.TarefaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @RestController
-@RequestMapping("/tarefa")
+@RequestMapping("/tarefas")
 @RequiredArgsConstructor
 public class TarefaController {
 
@@ -24,25 +30,34 @@ public class TarefaController {
         return new ResponseEntity<>(tarefaDto, HttpStatus.CREATED);
     }
 
-    @GetMapping("id/{id}")
-    public ResponseEntity<TarefaDto> buscarTarefaPorId(@PathVariable("id") Long idTarefa){
+    @GetMapping("/{idTarefa}")
+    public ResponseEntity<TarefaDto> buscarTarefaPorId(@PathVariable Long idTarefa) {
         return ResponseEntity.ok(tarefaService.buscarTarefaPorId(idTarefa));
     }
 
-    @PatchMapping("/id/{id}")
-    public ResponseEntity<TarefaDto> atualizarTarefa(@PathVariable ("id") Long idTarefa,@Valid @RequestBody TarefaUpdateDto tarefaUpdateDto) {
+    @GetMapping("/{idTarefa}")
+    public ResponseEntity<List<TarefaDto>> listar(
+            @RequestParam(required = false) Status status,
+            @RequestParam(required = false) Prioridade prioridade,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataVencimento) {
+
+        return ResponseEntity.ok(tarefaService.listarTarefas(status, prioridade, dataVencimento));
+    }
+
+    @PatchMapping("/{idTarefa}")
+    public ResponseEntity<TarefaDto> atualizarTarefa(@PathVariable Long idTarefa, @Valid @RequestBody TarefaUpdateDto tarefaUpdateDto) {
         TarefaDto tarefaDto = tarefaService.atualizarTarefa(idTarefa, tarefaUpdateDto);
         return new ResponseEntity<>(tarefaDto, HttpStatus.OK);
     }
 
-    @PatchMapping("status/id/{id}")
-    public ResponseEntity<TarefaDto> atualizarStatisTarefa (@PathVariable ("id") Long idTarefa,@Valid @RequestBody TarefaStatusDto tarefaStatusDto){
+    @PatchMapping("/{idTarefa}/status")
+    public ResponseEntity<TarefaDto> atualizarStatusTarefa(@PathVariable Long idTarefa, @Valid @RequestBody TarefaStatusDto tarefaStatusDto) {
         TarefaDto tarefaDto = tarefaService.atualizarStatusTarefa(idTarefa, tarefaStatusDto);
         return new ResponseEntity<>(tarefaDto, HttpStatus.OK);
     }
 
-    @DeleteMapping("/id/{id}")
-    public ResponseEntity<Void> deletarTarefa(@PathVariable("id") Long idTarefa){
+    @DeleteMapping("/{idTarefa}")
+    public ResponseEntity<Void> deletarTarefa(@PathVariable Long idTarefa) {
         tarefaService.deletarTarefa(idTarefa);
         return ResponseEntity.noContent().build();
     }

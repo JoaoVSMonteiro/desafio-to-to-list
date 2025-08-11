@@ -13,7 +13,6 @@ public interface TarefaMapper {
     TarefaDto toDto(Tarefa tarefa);
 
     @Mapping(target = "idTarefa", ignore = true)
-    @Mapping(target = "subtarefas", source = "subtarefas")
     Tarefa toEntity(TarefaCreateDto tarefaCreateDto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
