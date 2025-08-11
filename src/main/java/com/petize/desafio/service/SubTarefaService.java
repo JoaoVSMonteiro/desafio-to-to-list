@@ -66,8 +66,6 @@ public class SubTarefaService {
 
         subTarefaMapper.atualizarSubTarefaMapper(subTarefaUpdateDto, subTarefaAtualizar);
 
-        subTarefaRepository.save(subTarefaAtualizar);
-
         return subTarefaMapper.toDto(subTarefaAtualizar);
     }
 

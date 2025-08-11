@@ -5,6 +5,7 @@ import com.petize.desafio.model.dto.tarefa.TarefaDto;
 import com.petize.desafio.model.dto.tarefa.TarefaStatusDto;
 import com.petize.desafio.model.dto.tarefa.TarefaUpdateDto;
 import com.petize.desafio.model.entity.Tarefa;
+import com.petize.desafio.model.enums.Prioridade;
 import com.petize.desafio.model.enums.Status;
 import com.petize.desafio.model.mapper.TarefaMapper;
 import com.petize.desafio.repository.TarefaRepository;
@@ -15,6 +16,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +57,12 @@ public class TarefaService {
                 });
     }
 
+    @Transactional(readOnly = true)
+    public List<TarefaDto> listarTarefas(Status status, Prioridade prioridade, LocalDate dataVencimento) {
+        List<Tarefa> tarefas = tarefaRepository.findByFiltros(status, prioridade, dataVencimento);
+        return tarefas.stream().map(tarefaMapper::toDto).toList();
+    }
+
     @Transactional
     public TarefaDto atualizarTarefa(Long idTarefa, TarefaUpdateDto tarefaUpdateDto){
         log.info("Iniciando atualização de tarefa");
@@ -60,8 +70,6 @@ public class TarefaService {
         Tarefa tarefaAtualizar = buscarTarefaById(idTarefa);
 
         tarefaMapper.atualizarTarefaMapper(tarefaUpdateDto, tarefaAtualizar);
-
-        tarefaRepository.save(tarefaAtualizar);
 
         return tarefaMapper.toDto(tarefaAtualizar);
     }
