@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/tarefas")
 @RequiredArgsConstructor
@@ -30,9 +32,14 @@ public class SubTarefaController {
         return ResponseEntity.ok(subTarefaService.buscarSubTarefaPorId(idSubTarefa));
     }
 
+    @GetMapping("/{idTarefa}/subtarefas")
+    public ResponseEntity<List<SubTarefaDto>> listarPorTarefa(@PathVariable Long idTarefa) {
+        return ResponseEntity.ok(subTarefaService.listarPorTarefa(idTarefa));
+    }
+
     @PatchMapping("/subtarefas/{idSubTarefa}")
     public ResponseEntity<SubTarefaDto> atualizarSubTarefa(@PathVariable Long idSubTarefa, @Valid @RequestBody SubTarefaUpdateDto subTarefaUpdateDto) {
-        SubTarefaDto subTarefaDto = subTarefaService.atualizarSubTarefa(idSubTarefa, subTarefaUpdateDto);
+        SubTarefaDto subTarefaDto = subTarefaService.atualizarTituloSubTarefa(idSubTarefa, subTarefaUpdateDto);
         return new ResponseEntity<>(subTarefaDto, HttpStatus.OK);
     }
 

@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -60,8 +62,17 @@ public class SubTarefaService {
                 });
     }
 
+    @Transactional(readOnly = true)
+    public List<SubTarefaDto> listarPorTarefa(Long idTarefa){
+        if(!tarefaRepository.existsById(idTarefa)) throw  new EntityNotFoundException("Tarefa com ID: " + idTarefa+ " não encontrada");
+        return subTarefaRepository.findByTarefa_IdTarefa(idTarefa)
+                .stream()
+                .map(subTarefaMapper::toDto)
+                .toList();
+    }
+
     @Transactional
-    public SubTarefaDto atualizarSubTarefa(Long idSubTarefa, SubTarefaUpdateDto subTarefaUpdateDto){
+    public SubTarefaDto atualizarTituloSubTarefa(Long idSubTarefa, SubTarefaUpdateDto subTarefaUpdateDto){
         log.info("Iniciando atualização de subtarefa");
 
         Subtarefa subTarefaAtualizar = buscarSubTarefaById(idSubTarefa);
