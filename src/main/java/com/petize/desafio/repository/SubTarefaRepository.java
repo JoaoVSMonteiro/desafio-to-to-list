@@ -11,4 +11,6 @@ public interface SubTarefaRepository extends JpaRepository<Subtarefa, Long> {
     boolean existsByTarefa_IdTarefaAndStatusNot(Long idTarefa, Status status);
 
     List<Subtarefa> findByTarefa_IdTarefa(Long idTarefa);
+
+    List<Subtarefa> findAllByTarefa_IdTarefaIn(List<Long> idTarefa);
 }

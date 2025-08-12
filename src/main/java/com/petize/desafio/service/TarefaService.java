@@ -1,24 +1,29 @@
 package com.petize.desafio.service;
 
-import com.petize.desafio.model.dto.tarefa.TarefaCreateDto;
-import com.petize.desafio.model.dto.tarefa.TarefaDto;
-import com.petize.desafio.model.dto.tarefa.TarefaStatusDto;
-import com.petize.desafio.model.dto.tarefa.TarefaUpdateDto;
+import com.petize.desafio.model.dto.tarefa.*;
+import com.petize.desafio.model.entity.Subtarefa;
 import com.petize.desafio.model.entity.Tarefa;
 import com.petize.desafio.model.enums.Prioridade;
 import com.petize.desafio.model.enums.Status;
+import com.petize.desafio.model.mapper.SubTarefaMapper;
 import com.petize.desafio.model.mapper.TarefaMapper;
+import com.petize.desafio.repository.SubTarefaRepository;
 import com.petize.desafio.repository.TarefaRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +33,8 @@ public class TarefaService {
     private final TarefaRepository tarefaRepository;
     private final TarefaMapper tarefaMapper;
     private final SubTarefaService subTarefaService;
+    private final SubTarefaRepository subTarefaRepository;
+    private final SubTarefaMapper subTarefaMapper;
 
     @Transactional
     public TarefaDto criarTarefa(TarefaCreateDto tarefaCreateDto){
@@ -61,6 +68,34 @@ public class TarefaService {
     public List<TarefaDto> listarTarefas(Status status, Prioridade prioridade, LocalDate dataVencimento) {
         List<Tarefa> tarefas = tarefaRepository.findByFiltros(status, prioridade, dataVencimento);
         return tarefas.stream().map(tarefaMapper::toDto).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TarefaPaginacaoDto> listarTarefasPaginado(Optional<Long> idTarefaFiltro, Status status, Prioridade prioridade, LocalDate dataVencimento, Pageable pageable){
+        Page<Tarefa> page = tarefaRepository.buscarPorFiltrosComId(
+                idTarefaFiltro.orElse(null), status, prioridade, dataVencimento, pageable);
+
+        List<Long> ids = page.getContent().stream().map(Tarefa::getIdTarefa).toList();
+
+        Map<Long, List<Subtarefa>> subsPorTarefa = ids.isEmpty()
+                ? Map.of()
+                : subTarefaRepository.findAllByTarefa_IdTarefaIn(ids).stream()
+                .collect(Collectors.groupingBy(s -> s.getTarefa().getIdTarefa()));
+
+        return page.map(t -> TarefaPaginacaoDto.builder()
+                .idTarefa(t.getIdTarefa())
+                .tituloTarefa(t.getTituloTarefa())
+                .descricao(t.getDescricao())
+                .dataVencimento(t.getDataVencimento())
+                .status(t.getStatus())
+                .prioridade(t.getPrioridade())
+                .subtarefas(
+                        subsPorTarefa.getOrDefault(t.getIdTarefa(), List.of())
+                                .stream()
+                                .map(subTarefaMapper::toDto)
+                                .collect(Collectors.toSet())
+                )
+                .build());
     }
 
     @Transactional

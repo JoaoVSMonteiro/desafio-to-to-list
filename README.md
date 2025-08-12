@@ -1,5 +1,5 @@
 
-# ✅ API REST – To-Do (Tarefas & Subtarefas)
+# ✅ API REST – To-Do-List (Tarefas & Subtarefas)
 
 ## 📌 Objetivo
 API RESTful para gerenciamento de **tarefas** e **subtarefas**, com regras de negócio:
@@ -62,17 +62,16 @@ Local dos scripts: `src/main/resources/db/migration/`
 
 ## 🔗 Endpoints
 
-Base URL: `http://localhost:8080`
-
 ### 📝 Tarefas
-| Método | URL                                                                             | Descrição |
-|---|---------------------------------------------------------------------------------|---|
-| **POST** | `http://localhost:8080/tarefas`                                                 | Criar tarefa |
-| **GET** | `http://localhost:8080/tarefas/{idTarefa}`                                      | Buscar por ID |
-| **GET** | `http://localhost:8080/tarefas?status=…&prioridade=…&dataVencimento=YYYY-MM-DD` | Listar com filtros (todos opcionais) |
+| Método | URL                                                                             | Descrição                                                  |
+|---|---------------------------------------------------------------------------------|------------------------------------------------------------|
+| **POST** | `http://localhost:8080/tarefas`                                                 | Criar tarefa                                               |
+| **GET** | `http://localhost:8080/tarefas/{idTarefa}`                                      | Buscar por ID                                              |
+| **GET** | `http://localhost:8080/tarefas?status=…&prioridade=…&dataVencimento=YYYY-MM-DD` | Listar com filtros (todos opcionais)                       |
 | **PATCH** | `http://localhost:8080/tarefas/{idTarefa}`                                      | Atualização **parcial** (título/descrição/data/prioridade) |
-| **PATCH** | `http://localhost:8080/tarefas/{idTarefa}/status`                               | Atualizar **apenas o status** |
-| **DELETE** | `http://localhost:8080/tarefas/{idTarefa}`                                      | Remover tarefa |
+| **PATCH** | `http://localhost:8080/tarefas/{idTarefa}/status`                               | Atualizar **apenas o status**                              |
+| **DELETE** | `http://localhost:8080/tarefas/{idTarefa}`                                      | Remover tarefa                                             |
+| **GET** | `http://localhost:8080/tarefas/paginado?status=PENDENTE&prioridade=ALTA&dataVencimento=2025-08-22&page=0&size=5&sort=prioridade,desc&sort=tituloTarefa,asc` | Listar paginado com filtros e ordenação (todos opcionais)  |
 
 #### Exemplos (JSON)
 Criar:
@@ -132,6 +131,7 @@ Criar subtarefa:
 - Tarefa só pode ser marcada como **CONCLUIDA** se **todas** as suas subtarefas estiverem **CONCLUIDAS**.
 - Não é permitido **criar/alterar** subtarefas se a tarefa-pai estiver **CONCLUIDA** ou **CANCELADA**.
 - Status padrão ao criar tarefa/subtarefa, se ausente ou inválido: **PENDENTE**.
+- Nos endpoints de atualização parcial (PATCH), os campos enviados serão atualizados e os não enviados permanecerão com os valores já existentes.
 
 
 
