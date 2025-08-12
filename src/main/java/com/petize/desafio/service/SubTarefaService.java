@@ -71,6 +71,7 @@ public class SubTarefaService {
                 .toList();
     }
 
+
     @Transactional
     public SubTarefaDto atualizarTituloSubTarefa(Long idSubTarefa, SubTarefaUpdateDto subTarefaUpdateDto){
         log.info("Iniciando atualização de subtarefa");
