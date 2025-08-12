@@ -32,6 +32,8 @@ public class SubTarefaService {
         Tarefa idTarefaAssociada = tarefaRepository.findById(idTarefa)
                 .orElseThrow(() -> new EntityNotFoundException("Tarefa com ID: "+ idTarefa +" não encontrada"));
 
+        validarStatusTarefa(idTarefaAssociada);
+
         Subtarefa subtarefa = subTarefaMapper.toEntity(subTarefaCreateDto);
         if (subtarefa.getStatus() == null
                 || subtarefa.getStatus() == Status.CONCLUIDA
@@ -64,6 +66,8 @@ public class SubTarefaService {
 
         Subtarefa subTarefaAtualizar = buscarSubTarefaById(idSubTarefa);
 
+        validarStatusTarefa(subTarefaAtualizar.getTarefa());
+
         subTarefaMapper.atualizarSubTarefaMapper(subTarefaUpdateDto, subTarefaAtualizar);
 
         return subTarefaMapper.toDto(subTarefaAtualizar);
@@ -73,6 +77,7 @@ public class SubTarefaService {
     public SubTarefaDto atualizarStatusSubTarefa(Long idSubTarefa, SubTarefaStatusDto subTarefaStatusDto){
 
         Subtarefa subtarefa = buscarSubTarefaById(idSubTarefa);
+        validarStatusTarefa(subtarefa.getTarefa());
         Status novoStatus =  subTarefaStatusDto.getStatus();
 
         if (novoStatus == subtarefa.getStatus()) {
@@ -104,5 +109,12 @@ public class SubTarefaService {
     @Transactional(readOnly = true)
     public boolean possuiPendentes (Long idTarefa){
         return subTarefaRepository.existsByTarefa_IdTarefaAndStatusNot(idTarefa, Status.CONCLUIDA);
+    }
+
+    private void validarStatusTarefa(Tarefa tarefa){
+        if(tarefa.getStatus() == Status.CONCLUIDA ||tarefa.getStatus() == Status.CANCELADA){
+            log.warn("Não é possível criar ou alterar subtarefas de uma tarefa já concluída ou cancelada");
+            throw new IllegalStateException("Não é possível criar ou alterar subtarefas de uma tarefa já concluída ou cancelada");
+        }
     }
 }
