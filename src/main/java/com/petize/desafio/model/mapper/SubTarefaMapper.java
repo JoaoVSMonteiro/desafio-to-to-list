@@ -3,9 +3,7 @@ package com.petize.desafio.model.mapper;
 import com.petize.desafio.model.dto.subtarefa.SubTarefaCreateDto;
 import com.petize.desafio.model.dto.subtarefa.SubTarefaDto;
 import com.petize.desafio.model.dto.subtarefa.SubTarefaUpdateDto;
-import com.petize.desafio.model.dto.tarefa.TarefaUpdateDto;
 import com.petize.desafio.model.entity.Subtarefa;
-import com.petize.desafio.model.entity.Tarefa;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")

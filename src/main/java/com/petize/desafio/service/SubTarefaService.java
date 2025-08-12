@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -31,6 +33,8 @@ public class SubTarefaService {
 
         Tarefa idTarefaAssociada = tarefaRepository.findById(idTarefa)
                 .orElseThrow(() -> new EntityNotFoundException("Tarefa com ID: "+ idTarefa +" não encontrada"));
+
+        validarStatusTarefa(idTarefaAssociada);
 
         Subtarefa subtarefa = subTarefaMapper.toEntity(subTarefaCreateDto);
         if (subtarefa.getStatus() == null
@@ -58,11 +62,22 @@ public class SubTarefaService {
                 });
     }
 
+    @Transactional(readOnly = true)
+    public List<SubTarefaDto> listarPorTarefa(Long idTarefa){
+        if(!tarefaRepository.existsById(idTarefa)) throw  new EntityNotFoundException("Tarefa com ID: " + idTarefa+ " não encontrada");
+        return subTarefaRepository.findByTarefa_IdTarefa(idTarefa)
+                .stream()
+                .map(subTarefaMapper::toDto)
+                .toList();
+    }
+
     @Transactional
-    public SubTarefaDto atualizarSubTarefa(Long idSubTarefa, SubTarefaUpdateDto subTarefaUpdateDto){
+    public SubTarefaDto atualizarTituloSubTarefa(Long idSubTarefa, SubTarefaUpdateDto subTarefaUpdateDto){
         log.info("Iniciando atualização de subtarefa");
 
         Subtarefa subTarefaAtualizar = buscarSubTarefaById(idSubTarefa);
+
+        validarStatusTarefa(subTarefaAtualizar.getTarefa());
 
         subTarefaMapper.atualizarSubTarefaMapper(subTarefaUpdateDto, subTarefaAtualizar);
 
@@ -73,6 +88,7 @@ public class SubTarefaService {
     public SubTarefaDto atualizarStatusSubTarefa(Long idSubTarefa, SubTarefaStatusDto subTarefaStatusDto){
 
         Subtarefa subtarefa = buscarSubTarefaById(idSubTarefa);
+        validarStatusTarefa(subtarefa.getTarefa());
         Status novoStatus =  subTarefaStatusDto.getStatus();
 
         if (novoStatus == subtarefa.getStatus()) {
@@ -104,5 +120,12 @@ public class SubTarefaService {
     @Transactional(readOnly = true)
     public boolean possuiPendentes (Long idTarefa){
         return subTarefaRepository.existsByTarefa_IdTarefaAndStatusNot(idTarefa, Status.CONCLUIDA);
+    }
+
+    private void validarStatusTarefa(Tarefa tarefa){
+        if(tarefa.getStatus() == Status.CONCLUIDA ||tarefa.getStatus() == Status.CANCELADA){
+            log.warn("Não é possível criar ou alterar subtarefas de uma tarefa já concluída ou cancelada");
+            throw new IllegalStateException("Não é possível criar ou alterar subtarefas de uma tarefa já concluída ou cancelada");
+        }
     }
 }

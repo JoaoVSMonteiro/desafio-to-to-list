@@ -2,7 +2,6 @@ package com.petize.desafio.controller;
 
 import com.petize.desafio.model.dto.subtarefa.SubTarefaCreateDto;
 import com.petize.desafio.model.dto.subtarefa.SubTarefaDto;
-
 import com.petize.desafio.model.dto.subtarefa.SubTarefaStatusDto;
 import com.petize.desafio.model.dto.subtarefa.SubTarefaUpdateDto;
 import com.petize.desafio.service.SubTarefaService;
@@ -12,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/tarefas")
@@ -31,9 +32,14 @@ public class SubTarefaController {
         return ResponseEntity.ok(subTarefaService.buscarSubTarefaPorId(idSubTarefa));
     }
 
+    @GetMapping("/{idTarefa}/subtarefas")
+    public ResponseEntity<List<SubTarefaDto>> listarPorTarefa(@PathVariable Long idTarefa) {
+        return ResponseEntity.ok(subTarefaService.listarPorTarefa(idTarefa));
+    }
+
     @PatchMapping("/subtarefas/{idSubTarefa}")
     public ResponseEntity<SubTarefaDto> atualizarSubTarefa(@PathVariable Long idSubTarefa, @Valid @RequestBody SubTarefaUpdateDto subTarefaUpdateDto) {
-        SubTarefaDto subTarefaDto = subTarefaService.atualizarSubTarefa(idSubTarefa, subTarefaUpdateDto);
+        SubTarefaDto subTarefaDto = subTarefaService.atualizarTituloSubTarefa(idSubTarefa, subTarefaUpdateDto);
         return new ResponseEntity<>(subTarefaDto, HttpStatus.OK);
     }
 
