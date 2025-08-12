@@ -35,12 +35,11 @@ public class TarefaController {
         return ResponseEntity.ok(tarefaService.buscarTarefaPorId(idTarefa));
     }
 
-    @GetMapping("/{idTarefa}")
+    @GetMapping
     public ResponseEntity<List<TarefaDto>> listar(
             @RequestParam(required = false) Status status,
             @RequestParam(required = false) Prioridade prioridade,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataVencimento) {
-
         return ResponseEntity.ok(tarefaService.listarTarefas(status, prioridade, dataVencimento));
     }
 
