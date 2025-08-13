@@ -1,5 +1,6 @@
 package com.petize.desafio.controller;
 
+import com.petize.desafio.controller.doc.TarefaControllerDoc;
 import com.petize.desafio.model.dto.tarefa.*;
 import com.petize.desafio.model.enums.Prioridade;
 import com.petize.desafio.model.enums.Status;
@@ -21,7 +22,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/tarefas")
 @RequiredArgsConstructor
-public class TarefaController {
+public class TarefaController implements TarefaControllerDoc{
 
     private final TarefaService tarefaService;
 
@@ -45,16 +46,8 @@ public class TarefaController {
     }
 
     @GetMapping("/paginado")
-    public ResponseEntity<Page<TarefaPaginacaoDto>> listaPaginada(
-            @RequestParam(required = false) Long idTarefa,
-            @RequestParam(required = false) Status status,
-            @RequestParam(required = false) Prioridade prioridade,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataVencimento,
-            @PageableDefault(size = 10, sort = "dataVencimento") Pageable pageable
-    ){
-        Page<TarefaPaginacaoDto> pagina = tarefaService.listarTarefasPaginado(Optional.ofNullable(idTarefa), status, prioridade, dataVencimento, pageable);
-        return ResponseEntity.ok(pagina);
+    public ResponseEntity<List<TarefaPaginacaoDto>> buscarTarefasCompleto(@RequestParam Optional<Long> idTarefa) {
+        return ResponseEntity.ok(tarefaService.listarTarefasCompleto(idTarefa));
     }
 
     @PatchMapping("/{idTarefa}")
