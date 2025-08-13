@@ -41,4 +41,6 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
                                        @Param("prioridade") Prioridade prioridade,
                                        @Param("dataVencimento") LocalDate dataVencimento,
                                        Pageable pageable);
+
+    boolean existsByTituloTarefaIgnoreCase(String titulo);
 }

@@ -6,7 +6,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ErrorRespondeDto {
+public class ErrorResponseDto {
     private String timestamp;
     private int status;
     private String error;

@@ -122,7 +122,7 @@ public class SubTarefaService {
 
     @Transactional(readOnly = true)
     public boolean possuiPendentes (Long idTarefa){
-        return subTarefaRepository.existsByTarefa_IdTarefaAndStatusNot(idTarefa, Status.CONCLUIDA);
+        return subTarefaRepository.existeNaoConcluida(idTarefa, Status.CONCLUIDA);
     }
 
     private void validarStatusTarefa(Tarefa tarefa){

@@ -41,6 +41,11 @@ public class TarefaService {
     public TarefaDto criarTarefa(TarefaCreateDto tarefaCreateDto){
         log.info("Iniciando criação de tarefa");
 
+        String tituloTarefa = tarefaCreateDto.getTituloTarefa().trim();
+        if(tarefaRepository.existsByTituloTarefaIgnoreCase(tarefaCreateDto.getTituloTarefa())){
+            throw new RegraDeNegocioException("Já existe uma tarefa com o título: " + tarefaCreateDto.getTituloTarefa());
+        }
+
         Tarefa tarefa = tarefaMapper.toEntity(tarefaCreateDto);
         if (tarefa.getStatus() == null
                 || tarefa.getStatus() == Status.CONCLUIDA
@@ -125,7 +130,8 @@ public class TarefaService {
         if(novoStatus == Status.CONCLUIDA) {
             boolean existePendente = subTarefaService.possuiPendentes(idTarefa);
             if(existePendente){
-                throw new RegraDeNegocioException("Não é possível concluir, existem subtarefas pendentes");
+                log.error("Não é possível concluir tarefa, existem subtarefas pendentes");
+                throw new RegraDeNegocioException("Não é possível concluir tarefa, existem subtarefas pendentes");
             }
         }
         tarefa.setStatus(novoStatus);
