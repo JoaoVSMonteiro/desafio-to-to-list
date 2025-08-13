@@ -18,9 +18,8 @@ public interface SubTarefaRepository extends JpaRepository<Subtarefa, Long> {
        where s.tarefa.idTarefa = :idTarefa
          and s.status <> :statusConcluida
     """)
-    boolean existeNaoConcluida(@Param("idTarefa") Long idTarefa,@Param("statusConcluida") com.petize.desafio.model.enums.Status statusConcluida );
+    boolean existeNaoConcluida(@Param("idTarefa") Long idTarefa,@Param("statusConcluida") Status statusConcluida );
 
     List<Subtarefa> findByTarefa_IdTarefa(Long idTarefa);
 
-    List<Subtarefa> findAllByTarefa_IdTarefaIn(List<Long> idTarefa);
 }

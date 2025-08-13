@@ -1,4 +1,4 @@
-package com.petize.desafio.controller;
+package com.petize.desafio.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;

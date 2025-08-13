@@ -1,5 +1,7 @@
 package com.petize.desafio.controller;
 
+import com.petize.desafio.controller.doc.SubTarefaControllerDoc;
+import com.petize.desafio.controller.doc.TarefaControllerDoc;
 import com.petize.desafio.model.dto.subtarefa.SubTarefaCreateDto;
 import com.petize.desafio.model.dto.subtarefa.SubTarefaDto;
 import com.petize.desafio.model.dto.subtarefa.SubTarefaStatusDto;
@@ -17,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/tarefas")
 @RequiredArgsConstructor
-public class SubTarefaController {
+public class SubTarefaController implements SubTarefaControllerDoc {
 
     private final SubTarefaService subTarefaService;
 

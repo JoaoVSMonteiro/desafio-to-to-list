@@ -3,7 +3,6 @@ package com.petize.desafio.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,22 +18,6 @@ public class SwaggerConfig {
                                 API REST para gerenciamento de tarefas (To-Do) e subtarefas.
                                 Funcionalidades: criar, listar (com filtros), atualizar, excluir e impedir conclusão com subtarefas pendentes.
                                 """));
-    }
-
-    @Bean
-    GroupedOpenApi tarefasGroup() {
-        return GroupedOpenApi.builder()
-                .group("tarefas")
-                .pathsToMatch("/tarefas/**")
-                .build();
-    }
-
-    @Bean
-    GroupedOpenApi subtarefasGroup() {
-        return GroupedOpenApi.builder()
-                .group("subtarefas")
-                .pathsToMatch("/tarefas/**/subtarefas/**", "/tarefas/subtarefas/**")
-                .build();
     }
 
 }

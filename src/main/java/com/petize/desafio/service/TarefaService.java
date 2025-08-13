@@ -2,29 +2,22 @@ package com.petize.desafio.service;
 
 import com.petize.desafio.exception.RecursoNaoEncontradoException;
 import com.petize.desafio.exception.RegraDeNegocioException;
+import com.petize.desafio.model.dto.subtarefa.SubTarefaDto;
 import com.petize.desafio.model.dto.tarefa.*;
-import com.petize.desafio.model.entity.Subtarefa;
 import com.petize.desafio.model.entity.Tarefa;
 import com.petize.desafio.model.enums.Prioridade;
 import com.petize.desafio.model.enums.Status;
-import com.petize.desafio.model.mapper.SubTarefaMapper;
 import com.petize.desafio.model.mapper.TarefaMapper;
-import com.petize.desafio.repository.SubTarefaRepository;
 import com.petize.desafio.repository.TarefaRepository;
 
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +27,7 @@ public class TarefaService {
     private final TarefaRepository tarefaRepository;
     private final TarefaMapper tarefaMapper;
     private final SubTarefaService subTarefaService;
-    private final SubTarefaRepository subTarefaRepository;
-    private final SubTarefaMapper subTarefaMapper;
+
 
     @Transactional
     public TarefaDto criarTarefa(TarefaCreateDto tarefaCreateDto){
@@ -76,32 +68,57 @@ public class TarefaService {
         return tarefas.stream().map(tarefaMapper::toDto).toList();
     }
 
+
     @Transactional(readOnly = true)
-    public Page<TarefaPaginacaoDto> listarTarefasPaginado(Optional<Long> idTarefaFiltro, Status status, Prioridade prioridade, LocalDate dataVencimento, Pageable pageable){
-        Page<Tarefa> page = tarefaRepository.buscarPorFiltrosComId(
-                idTarefaFiltro.orElse(null), status, prioridade, dataVencimento, pageable);
+    public List<TarefaPaginacaoDto> listarTarefasCompleto(Optional<Long> idTarefaFiltro) {
+        List<Object[]> rows = tarefaRepository.buscaTarefaCompleto();
+        List<TarefaPaginacaoDto> lista = processarBuscaTarefaCompleto(rows);
 
-        List<Long> ids = page.getContent().stream().map(Tarefa::getIdTarefa).toList();
+        return idTarefaFiltro
+                .map(id -> lista.stream()
+                        .filter(t -> t.getIdTarefa().equals(id))
+                        .toList())
+                .orElse(lista);
+    }
 
-        Map<Long, List<Subtarefa>> subsPorTarefa = ids.isEmpty()
-                ? Map.of()
-                : subTarefaRepository.findAllByTarefa_IdTarefaIn(ids).stream()
-                .collect(Collectors.groupingBy(s -> s.getTarefa().getIdTarefa()));
+    public List<TarefaPaginacaoDto> processarBuscaTarefaCompleto(List<Object[]> lista) {
+        Map<Long, TarefaPaginacaoDto> map = new LinkedHashMap<>();
 
-        return page.map(t -> TarefaPaginacaoDto.builder()
-                .idTarefa(t.getIdTarefa())
-                .tituloTarefa(t.getTituloTarefa())
-                .descricao(t.getDescricao())
-                .dataVencimento(t.getDataVencimento())
-                .status(t.getStatus())
-                .prioridade(t.getPrioridade())
-                .subtarefas(
-                        subsPorTarefa.getOrDefault(t.getIdTarefa(), List.of())
-                                .stream()
-                                .map(subTarefaMapper::toDto)
-                                .collect(Collectors.toSet())
-                )
-                .build());
+        for (Object[] r : lista) {
+            Long idTarefa             = (Long)      r[0];
+            String tituloTarefa       = (String)    r[1];
+            String descricao          = (String)    r[2];
+            LocalDate dataVencimento  = (LocalDate) r[3];
+            Status status             = (Status)    r[4];
+            Prioridade prioridade     = (Prioridade)r[5];
+            Long idSubTarefa          = (Long)      r[6];
+            String tituloSubTarefa    = (String)    r[7];
+            Status statusSub          = (Status)    r[8];
+
+            TarefaPaginacaoDto agg = map.computeIfAbsent(idTarefa, id ->
+                    TarefaPaginacaoDto.builder()
+                            .idTarefa(idTarefa)
+                            .tituloTarefa(tituloTarefa)
+                            .descricao(descricao)
+                            .dataVencimento(dataVencimento)
+                            .status(status)
+                            .prioridade(prioridade)
+                            .subtarefas(new LinkedHashSet<>())
+                            .build()
+            );
+
+            if (idSubTarefa != null) {
+                agg.getSubtarefas().add(
+                        SubTarefaDto.builder()
+                                .idSubTarefa(idSubTarefa)
+                                .tituloSubTarefa(tituloSubTarefa)
+                                .status(statusSub)
+                                .build()
+                );
+            }
+        }
+
+        return new ArrayList<>(map.values());
     }
 
     @Transactional
