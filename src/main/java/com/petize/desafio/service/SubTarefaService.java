@@ -1,5 +1,7 @@
 package com.petize.desafio.service;
 
+import com.petize.desafio.exception.RecursoNaoEncontradoException;
+import com.petize.desafio.exception.RegraDeNegocioException;
 import com.petize.desafio.model.dto.subtarefa.SubTarefaCreateDto;
 import com.petize.desafio.model.dto.subtarefa.SubTarefaDto;
 import com.petize.desafio.model.dto.subtarefa.SubTarefaStatusDto;
@@ -32,7 +34,7 @@ public class SubTarefaService {
         log.info("Iniciando criação da subtarefa");
 
         Tarefa idTarefaAssociada = tarefaRepository.findById(idTarefa)
-                .orElseThrow(() -> new EntityNotFoundException("Tarefa com ID: "+ idTarefa +" não encontrada"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Não é possível criar subtarefas de uma tarefa já concluída ou cancelada", idTarefa));
 
         validarStatusTarefa(idTarefaAssociada);
 
@@ -58,7 +60,7 @@ public class SubTarefaService {
                     return  subTarefaMapper.toDto(subtarefa);
                 }).orElseThrow(() -> {
                     log.warn("Subtarefa não encontrada. ID = {}", idSubTarefa);
-                    return new EntityNotFoundException("Subtarefa com id = " + idSubTarefa + " não encontrada");
+                    return new RecursoNaoEncontradoException("Subtarefa", idSubTarefa);
                 });
     }
 
@@ -106,7 +108,7 @@ public class SubTarefaService {
     public void deletarSubTarefa(Long idSubTarefa){
         if(!subTarefaRepository.existsById(idSubTarefa)){
             log.warn("Subtarefa com ID= {}, não encontrada", idSubTarefa);
-            throw new EntityNotFoundException("Subtarefa com id = " + idSubTarefa + " não encontrada");
+            throw new RecursoNaoEncontradoException("Subtarefa", idSubTarefa);
         }
         subTarefaRepository.deleteById(idSubTarefa);
         log.info("Subtarefa deletada com sucesso. ID={}", idSubTarefa);
@@ -115,7 +117,7 @@ public class SubTarefaService {
     @Transactional(readOnly = true)
     public Subtarefa buscarSubTarefaById(Long idSubTarefa){
         return subTarefaRepository.findById(idSubTarefa)
-                .orElseThrow(() -> new EntityNotFoundException("Subtarefa com id = " + idSubTarefa + " não encontrada"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Subtarefa", idSubTarefa));
     }
 
     @Transactional(readOnly = true)
@@ -126,7 +128,7 @@ public class SubTarefaService {
     private void validarStatusTarefa(Tarefa tarefa){
         if(tarefa.getStatus() == Status.CONCLUIDA ||tarefa.getStatus() == Status.CANCELADA){
             log.warn("Não é possível criar ou alterar subtarefas de uma tarefa já concluída ou cancelada");
-            throw new IllegalStateException("Não é possível criar ou alterar subtarefas de uma tarefa já concluída ou cancelada");
+            throw new RegraDeNegocioException("Não é possível criar ou alterar subtarefas de uma tarefa já concluída ou cancelada");
         }
     }
 }

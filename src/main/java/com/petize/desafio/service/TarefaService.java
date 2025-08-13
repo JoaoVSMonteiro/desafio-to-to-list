@@ -1,5 +1,7 @@
 package com.petize.desafio.service;
 
+import com.petize.desafio.exception.RecursoNaoEncontradoException;
+import com.petize.desafio.exception.RegraDeNegocioException;
 import com.petize.desafio.model.dto.tarefa.*;
 import com.petize.desafio.model.entity.Subtarefa;
 import com.petize.desafio.model.entity.Tarefa;
@@ -9,7 +11,6 @@ import com.petize.desafio.model.mapper.SubTarefaMapper;
 import com.petize.desafio.model.mapper.TarefaMapper;
 import com.petize.desafio.repository.SubTarefaRepository;
 import com.petize.desafio.repository.TarefaRepository;
-import jakarta.persistence.EntityNotFoundException;
 
 
 import lombok.RequiredArgsConstructor;
@@ -60,7 +61,7 @@ public class TarefaService {
                     return  tarefaMapper.toDto(tarefa);
                 }).orElseThrow(() -> {
                     log.warn("Tarefa não encontrada. ID = {}", idTarefa);
-                    return new EntityNotFoundException("Tarefa com id = " + idTarefa + " não encontrada");
+                    return new RecursoNaoEncontradoException("Tarefa", idTarefa);
                 });
     }
 
@@ -124,7 +125,7 @@ public class TarefaService {
         if(novoStatus == Status.CONCLUIDA) {
             boolean existePendente = subTarefaService.possuiPendentes(idTarefa);
             if(existePendente){
-                throw new IllegalStateException("Não é possível concluir, existem subtarefas pendentes");
+                throw new RegraDeNegocioException("Não é possível concluir, existem subtarefas pendentes");
             }
         }
         tarefa.setStatus(novoStatus);
@@ -136,7 +137,7 @@ public class TarefaService {
     public void deletarTarefa(Long idTarefa){
         if(!tarefaRepository.existsById(idTarefa)){
             log.warn("Tarefa com ID= {}, não encontrada", idTarefa);
-            throw new EntityNotFoundException("Tarefa com id = " + idTarefa + " não encontrada");
+            throw new RecursoNaoEncontradoException("Tarefa", idTarefa);
         }
         tarefaRepository.deleteById(idTarefa);
         log.info("Tarefa deletada com sucesso. ID={}", idTarefa);
@@ -145,7 +146,7 @@ public class TarefaService {
     @Transactional(readOnly = true)
     public Tarefa buscarTarefaById(Long idTarefa){
         return tarefaRepository.findById(idTarefa)
-                .orElseThrow(() -> new EntityNotFoundException("Tarefa com id = " + idTarefa + " não encontrada"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Tarefa", idTarefa));
     }
 
 
