@@ -1,3 +1,4 @@
+
 package com.petize.desafio.service;
 
 
@@ -279,4 +280,3 @@ public class TarefaServiceTest {
         verify(repo).findById(ID_TAREFA_INEXISTENTE);
     }
 }
-
