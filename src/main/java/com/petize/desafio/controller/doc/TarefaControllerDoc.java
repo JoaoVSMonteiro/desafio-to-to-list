@@ -112,7 +112,7 @@ public interface TarefaControllerDoc {
 
     @Operation(
             summary = "Atualizar tarefa (PATCH)",
-            description = "Atualiza campos editáveis da tarefa (**Título**, **Data de Vencimento**, **Prioridade**).",
+            description = "Atualiza campos editáveis da tarefa (**Título**,**Descrição** ,**Data de Vencimento**, **Prioridade**).",
             parameters = {
                     @Parameter(name = "idTarefa", in = ParameterIn.PATH, required = true, example = "1")
             },

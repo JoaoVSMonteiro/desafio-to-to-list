@@ -133,5 +133,30 @@ Criar subtarefa:
 - Status padrão ao criar tarefa/subtarefa, se ausente ou inválido: **PENDENTE**.
 - Nos endpoints de atualização parcial (PATCH), os campos enviados serão atualizados e os não enviados permanecerão com os valores já existentes.
 
+---
 
+## 🧪 Testes
+
+- Testes unitários dos services com **JUnit 5** e **Mockito**.
+- Rodar testes:
+
+---
+
+## 📖 Swagger / OpenAPI
+
+- **Swagger UI:** **http://localhost:8080/swagger-ui.html**
+
+---
+
+## ✅ Checklist
+
+- [x] Criar/listar/atualizar/deletar tarefas
+- [x] Filtros por **status**, **prioridade** e **vencimento**
+- [x] Atualizar **status** da tarefa
+- [x] **Impede conclusão** com subtarefas pendentes
+- [x] **Paginação**
+- [x] **Validação** com `@Valid`
+- [x] **Swagger** + README
+- [x] **Docker Compose** + banco
+- [x] **Testes unitários** (services)  
 
