@@ -6,7 +6,7 @@ import com.petize.desafio.model.dto.subtarefa.SubTarefaUpdateDto;
 import com.petize.desafio.model.entity.Subtarefa;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface SubTarefaMapper {
 
     SubTarefaDto toDto(Subtarefa subtarefa);
@@ -15,6 +15,8 @@ public interface SubTarefaMapper {
     @Mapping(target = "tarefa", ignore = true)
     Subtarefa toEntity(SubTarefaCreateDto subTarefaDto);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "idSubTarefa", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "tarefa", ignore = true)
     void atualizarSubTarefaMapper(SubTarefaUpdateDto subTarefaUpdateDto, @MappingTarget Subtarefa subtarefa);
 }
