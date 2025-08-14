@@ -48,7 +48,6 @@ dependencies {
 	implementation 'org.flywaydb:flyway-database-oracle'
 	runtimeOnly 'com.oracle.database.jdbc:ojdbc11'
 
-
 	// Devtools
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
